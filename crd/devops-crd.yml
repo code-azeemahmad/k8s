@@ -1,0 +1,51 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: devopsbatches.codeazeem.io
+spec:
+  group: codeazeem.io
+  names:
+    plural: devopsbatches
+    singular: devopsbatch
+    kind: DevopsBatch
+    shortNames:
+      - dvb
+  scope: Namespaced
+  versions:
+  - name: v1
+    served: true
+    storage: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            required: ["duration", "mode", "platform"]
+            properties:
+              batchName:
+                type: string
+                description: "Name of the DevOps batch"
+              duration:
+                type: string
+                description: "Duration of the batch, e.g. 3 months"
+              mode:
+                type: string
+                enum: ["Live", "Recorded"]
+                description: "Delivery mode of the batch"
+              platform:
+                type: string
+                description: "Platform the batch runs on, e.g. Zoom"
+    additionalPrinterColumns:
+    - name: Mode
+      type: string
+      jsonPath: .spec.mode
+    - name: Duration
+      type: string
+      jsonPath: .spec.duration
+    - name: Platform
+      type: string
+      jsonPath: .spec.platform
+    - name: Age
+      type: date
+      jsonPath: .metadata.creationTimestamp

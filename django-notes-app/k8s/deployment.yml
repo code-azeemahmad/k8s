@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notes-app-deployment
+  namespace: nginx
+  labels:
+    app: notes-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notes-app
+  template:
+    metadata:
+      labels:
+        app: notes-app
+    spec:
+      containers:
+      - name: notes-app
+        image: codeazeem/notes-app-k8s:v3
+        ports:
+        - containerPort: 8000
+
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+
+        # 1. Protects the initial slow boot up
+        startupProbe:
+          httpGet:
+            path: /health/startup
+            port: 8000
+          failureThreshold: 30
+          periodSeconds: 10 # Gives the app up to 300 seconds to start
+
+        # 2. Controls traffic flow routing
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: 8000
+          periodSeconds: 5
+          failureThreshold: 2
+
+        # 3. Triggers self-healing restarts if deadlocked
+        livenessProbe:
+          httpGet:
+            path: /health/live
+            port: 8000
+          periodSeconds: 15
+          timeoutSeconds: 2

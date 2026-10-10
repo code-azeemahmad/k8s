@@ -1,0 +1,9 @@
+kind: DevopsBatch
+apiVersion: codeazeem.io/v1
+metadata:
+  name: devops-batch-1
+spec:
+  batchName: DevOps Batch 1
+  duration: 3 months
+  mode: Live
+  platform: Zoom
